@@ -282,26 +282,27 @@ app.post('/v1/chat/completions', async (req, res) => {
 
   try {
     const {
-      model,
-      messages,
-      temperature,
-      max_tokens,
-      stream
-    } = req.body;
+  model,
+  messages,
+  temperature,
+  top_p,
+  max_tokens,
+  stream
+} = req.body;
 
     const primaryModel = MODEL_MAPPING[model] || 'nvidia/llama-3.3-nemotron-super-49b-v1.5';
     const modelChain = [primaryModel, ...FALLBACK_MODELS];
 
     const baseRequest = {
-      messages,
-      temperature: temperature ?? 0.7,
-      max_tokens: Math.min(max_tokens ?? 2048, MAX_TOKENS_LIMIT),
-      stream: stream || false,
-      extra_body: ENABLE_THINKING_MODE
-        ? { chat_template_kwargs: { thinking: true } }
-        : undefined
-    };
-
+  messages,
+  temperature: temperature ?? 1.0,
+  top_p: top_p ?? 0.95,
+  max_tokens: Math.min(max_tokens ?? 2048, MAX_TOKENS_LIMIT),
+  stream: stream || false,
+  extra_body: ENABLE_THINKING_MODE
+    ? { chat_template_kwargs: { thinking: true } }
+    : undefined
+   };
     const { response, model: usedModel } = await callWithFallback(baseRequest, modelChain);
     upstreamStream = response.data;
     console.log('[PROXY] Model used:', usedModel);
