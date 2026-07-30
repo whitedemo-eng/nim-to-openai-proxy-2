@@ -297,7 +297,7 @@ app.post('/v1/chat/completions', async (req, res) => {
   messages,
   temperature: temperature ?? 1.0,
   top_p: top_p ?? 0.95,
-  max_tokens: Math.min(max_tokens ?? 2048, MAX_TOKENS_LIMIT),
+  max_tokens: Math.min(max_tokens ?? 6144, MAX_TOKENS_LIMIT),
   stream: stream || false,
   extra_body: ENABLE_THINKING_MODE
     ? { chat_template_kwargs: { thinking: true } }
