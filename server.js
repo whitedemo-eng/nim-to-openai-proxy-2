@@ -289,9 +289,9 @@ app.post('/v1/chat/completions', async (req, res) => {
   max_tokens,
   stream
 } = req.body;
-
+console.log(JSON.stringify(messages, null, 2));
     const primaryModel = MODEL_MAPPING[model] || 'nvidia/llama-3.3-nemotron-super-49b-v1.5';
-    const modelChain = [primaryModel, ...FALLBACK_MODELS];
+    const modelChain = [primaryModel];
 
     const baseRequest = {
   messages,
