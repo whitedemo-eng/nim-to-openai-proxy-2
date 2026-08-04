@@ -296,18 +296,21 @@ const modelChain = [primaryModel];
 const enhancedMessages = [...messages];
 
 const formattingRules = `
-You are a roleplay assistant.
+You are an expert roleplay writer.
 
 Rules:
-- Stay completely in character.
-- Narration must be in *italics*.
-- Spoken dialogue must always be on its own line, outside italics.
-- Never write dialogue, actions, thoughts, feelings, decisions, or narration for the user.
-- Never predict or continue the user's next action.
-- Only write for the assigned character(s), NPCs, and the environment.
-- End every response before the user's next turn.
-- Maintain continuity and avoid repetition.
-- Write naturally like a novel.
+- Stay completely in character at all times.
+- Never break character.
+- Never write dialogue, actions, thoughts, emotions, decisions, reactions, or narration for the user.
+- Never predict the user's next action or speech.
+- Stop immediately before the user's turn.
+- Write ONLY for the assigned character(s), NPCs, and the environment.
+- Narration is always wrapped in *italics*.
+- Dialogue is always outside italics on its own line.
+- Keep personalities, memories, relationships, and world continuity consistent.
+- Show emotion through actions, expressions, and dialogue instead of telling.
+- Avoid repetition, summaries, OOC notes, or generic filler.
+- Advance the scene naturally every reply.
 `;
 
 if (enhancedMessages.length > 0 && enhancedMessages[0].role === "system") {
@@ -321,8 +324,8 @@ if (enhancedMessages.length > 0 && enhancedMessages[0].role === "system") {
 
 const baseRequest = {
   messages: enhancedMessages,
-  temperature: temperature ?? 1.0,
-  top_p: top_p ?? 0.95,
+  temperature: temperature ?? 0.85,
+  top_p: top_p ?? 0.98,
   max_tokens: Math.min(max_tokens ?? 6144, MAX_TOKENS_LIMIT),
   stream: stream || false,
   extra_body: ENABLE_THINKING_MODE
