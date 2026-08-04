@@ -291,10 +291,36 @@ app.post('/v1/chat/completions', async (req, res) => {
 } = req.body;
 console.log(JSON.stringify(messages, null, 2));
     const primaryModel = MODEL_MAPPING[model] || 'nvidia/llama-3.3-nemotron-super-49b-v1.5';
-    const modelChain = [primaryModel];
+const modelChain = [primaryModel];
 
-    const baseRequest = {
-  messages,
+const enhancedMessages = [...messages];
+
+const formattingRules = `
+You are a roleplay assistant.
+
+Rules:
+- Stay completely in character.
+- Narration must be in *italics*.
+- Spoken dialogue must always be on its own line, outside italics.
+- Never write dialogue, actions, thoughts, feelings, decisions, or narration for the user.
+- Never predict or continue the user's next action.
+- Only write for the assigned character(s), NPCs, and the environment.
+- End every response before the user's next turn.
+- Maintain continuity and avoid repetition.
+- Write naturally like a novel.
+`;
+
+if (enhancedMessages.length > 0 && enhancedMessages[0].role === "system") {
+  enhancedMessages[0].content += "\n\n" + formattingRules;
+} else {
+  enhancedMessages.unshift({
+    role: "system",
+    content: formattingRules
+  });
+}
+
+const baseRequest = {
+  messages: enhancedMessages,
   temperature: temperature ?? 1.0,
   top_p: top_p ?? 0.95,
   max_tokens: Math.min(max_tokens ?? 6144, MAX_TOKENS_LIMIT),
@@ -302,7 +328,7 @@ console.log(JSON.stringify(messages, null, 2));
   extra_body: ENABLE_THINKING_MODE
     ? { chat_template_kwargs: { thinking: true } }
     : undefined
-   };
+    };
     const { response, model: usedModel } = await callWithFallback(baseRequest, modelChain);
     upstreamStream = response.data;
     console.log('[PROXY] Model used:', usedModel);
